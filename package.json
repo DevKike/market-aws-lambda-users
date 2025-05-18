@@ -1,0 +1,26 @@
+{
+  "name": "market-aws-lambda-users",
+  "version": "1.0.0",
+  "main": "src/infrastructure/handler/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm run build && cd terraform && terraform apply"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevKike/market-aws-lambda-users.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DevKike/market-aws-lambda-users/issues"
+  },
+  "homepage": "https://github.com/DevKike/market-aws-lambda-users#readme",
+  "description": "",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^22.15.18",
+    "typescript": "^5.8.3"
+  }
+}
