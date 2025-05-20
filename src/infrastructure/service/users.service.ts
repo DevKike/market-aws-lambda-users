@@ -6,6 +6,6 @@ export class UsersService implements IUsersService {
   constructor(private readonly _usersRepository: IUsersRepository) {}
 
   async saveUser(user: ICreateUser): Promise<IUser> {
-    return await this._usersRepository.save(user);
+    return this._usersRepository.save(user);
   }
 }

@@ -29,11 +29,12 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
     Statement = [
       {
         Action = [
-          "dynamodb:*",
-
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:Scan"
         ]
         Effect   = "Allow"
-        Resource = "*"
+        Resource = var.dynamodb_table_arn
       }
     ]
   })

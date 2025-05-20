@@ -40,13 +40,14 @@ export const handler = async (
     const service = new UsersService(repository);
     const useCase = new SignUpUseCase(service);
 
-    await useCase.execute(userRequest);
+    const response = await useCase.execute(userRequest);
 
     return {
       statusCode: 201,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: 'User created successfully',
+        data: response,
       }),
     };
   } catch (error) {
