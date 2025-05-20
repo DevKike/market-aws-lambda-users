@@ -26,6 +26,7 @@ export class UsersRepository implements IUsersRepository {
           id: userId,
           name: user.name,
           email: user.email,
+          password: user.password,
           phone: user.phone,
           createdAt: currentDate,
         } as ICreateUser,

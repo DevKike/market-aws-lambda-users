@@ -20,12 +20,17 @@ export const handler = async (
 
     const requestBody = JSON.parse(event.body);
 
-    if (!requestBody.name || !requestBody.email || !requestBody.phone) {
+    if (
+      !requestBody.name ||
+      !requestBody.email ||
+      !requestBody.password ||
+      !requestBody.phone
+    ) {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: 'Missing required fields: name, email, or phone',
+          message: 'Missing required fields: name, email, password or phone',
         }),
       };
     }
@@ -33,6 +38,7 @@ export const handler = async (
     const userRequest: ICreateUser = {
       name: requestBody.name,
       email: requestBody.email,
+      password: requestBody.password,
       phone: requestBody.phone,
     };
 
