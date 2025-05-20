@@ -4,7 +4,8 @@
   "main": "src/infrastructure/handler/index.ts",
   "scripts": {
     "build": "tsc",
-    "deploy": "npm run build && cd terraform && terraform apply"
+    "build:lambdas": "node build.js",
+    "deploy": "npm run build:lambdas && cd terraform && terraform apply"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,12 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.149",
     "@types/node": "^22.15.18",
+    "adm-zip": "^0.5.16",
+    "esbuild": "0.25.4",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "uuid": "^11.1.0"
   }
 }

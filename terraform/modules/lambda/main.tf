@@ -6,6 +6,9 @@ resource "aws_lambda_function" "function" {
   filename         = var.zip_file
   source_code_hash = var.source_code_hash
 
+  memory_size = 384
+  timeout     = 30
+
   environment {
     variables = var.environment_variables
   }
