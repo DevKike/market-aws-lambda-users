@@ -15,3 +15,8 @@ variable "aws_secret_key" {
   description = "AWS secret key"
   sensitive   = true
 }
+
+variable "jwt_secret" {
+  description = "JWT Secret Key"
+  sensitive   = true
+}
