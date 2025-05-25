@@ -27,8 +27,10 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
     "aws-sdk": "^2.1692.0",
     "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
     "uuid": "^11.1.0"
   }
 }
