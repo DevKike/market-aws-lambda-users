@@ -3,7 +3,7 @@ const { readdirSync, mkdirSync, readFileSync, writeFileSync } = require('fs');
 const { join } = require('path');
 const AdmZip = require('adm-zip');
 
-const HANDLERS_DIR = 'src/infrastructure/handlers/use-cases';
+const HANDLERS_DIR = 'src/infrastructure/handlers';
 
 async function buildLambdas() {
   mkdirSync('./lambdas', { recursive: true });

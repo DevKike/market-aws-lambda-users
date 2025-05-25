@@ -1,8 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { ICreateUser } from '../../../../domain/entity/users.entity.interface';
-import { SignUpUseCase } from '../../../../application/use-cases/sign-up.use-case';
-import { UsersService } from '../../../service/users.service';
-import { UsersRepository } from '../../../repository/users.repository';
+import { ICreateUser } from '../../../domain/entity/users.entity.interface';
+import { SignUpUseCase } from '../../../application/use-cases/sign-up.use-case';
+import { UsersService } from '../../service/users.service';
+import { UsersRepository } from '../../repository/users.repository';
+import { SignInUseCase } from '../../../application/use-cases/sign-in.use-case';
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -44,9 +45,9 @@ export const handler = async (
 
     const repository = new UsersRepository();
     const service = new UsersService(repository);
-    const useCase = new SignUpUseCase(service);
+    const signUpUseCase = new SignUpUseCase(service);
 
-    const response = await useCase.execute(userRequest);
+    const response = await signUpUseCase.execute(userRequest);
 
     return {
       statusCode: 201,
