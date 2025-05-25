@@ -15,6 +15,24 @@ export class UsersRepository implements IUsersRepository {
     });
   }
 
+  async findByEmail(email: string): Promise<IUser | null> {
+    const result = await this.docClient
+      .query({
+        TableName: this.tableName,
+        IndexName: 'EmailIndex',
+        KeyConditionExpression: 'email = :email',
+        ExpressionAttributeValues: {
+          ':email': email,
+        },
+      })
+      .promise();
+
+    if (result.Items && result.Items.length > 0)
+      return result.Items[0] as IUser;
+
+    return null;
+  }
+
   async save(user: ICreateUser): Promise<IUser> {
     const userId = uuidv4();
     const currentDate = new Date().getTime();
