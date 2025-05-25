@@ -160,7 +160,10 @@ dist
 
 ### Terraform ###
 # Local .terraform directories
-**/.terraform/*
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
 
 # .tfstate files
 *.tfstate
@@ -193,5 +196,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+/lambdas
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform,node,dotenv,git
