@@ -21,3 +21,27 @@ variable "hash_key_type" {
   type        = string
   default     = "S"
 }
+
+variable "gsi_name" {
+  description = "Name of the GSI"
+  type        = string
+  default     = "EmailIndex"
+}
+
+variable "gsi_key" {
+  description = "GSI partition key"
+  type        = string
+  default     = "email"
+}
+
+variable "gsi_key_type" {
+  description = "GSI partition key type"
+  type        = string
+  default     = "S"
+}
+
+variable "gsi_projection_type" {
+  description = "ProjectionType for the GSI"
+  type        = string
+  default     = "ALL"
+}
