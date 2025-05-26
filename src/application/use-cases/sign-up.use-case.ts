@@ -1,4 +1,7 @@
-import { ICreateUser, ISignUpRes } from '../../domain/entity/users.entity.interface';
+import {
+  ICreateUser,
+  ISignUpRes,
+} from '../../domain/entity/users.entity.interface';
 import { IUsersService } from '../../domain/service/users.service.interface';
 import { IUseCase } from '../../domain/use-case/users.use-case.interface';
 
@@ -7,7 +10,11 @@ export class SignUpUseCase implements IUseCase<ICreateUser, ISignUpRes> {
 
   async execute(input: ICreateUser): Promise<ISignUpRes> {
     try {
-      return this._usersService.saveUser(input);
+      const user = await this._usersService.saveUser(input);
+
+      return {
+        ...user,
+      };
     } catch (error) {
       throw error;
     }

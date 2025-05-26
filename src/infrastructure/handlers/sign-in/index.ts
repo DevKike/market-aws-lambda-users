@@ -3,63 +3,40 @@ import { ISignInReq } from '../../../domain/entity/users.entity.interface';
 import { SignInUseCase } from '../../../application/use-cases/sign-in.use-case';
 import { UsersService } from '../../service/users.service';
 import { UsersRepository } from '../../repository/users.repository';
+import middy from '@middy/core';
+import jsonBodyParser from '@middy/http-json-body-parser';
+import { signInValidator } from '../../schemas/sign-in/sign-in.schema';
+import { errorFormatter } from '../../utils/error-formatter/error-formatter.util';
+import httpErrorHandler from '@middy/http-error-handler';
 
-export const handler = async (
+export const signInHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   console.log('Sign-in request received:', event);
 
   try {
-    if (!event.body) {
-      return {
-        statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: 'Request body is required',
-        }),
-      };
-    }
+    const userData = event.body as unknown as ISignInReq;
 
-    const requestBody = JSON.parse(event.body);
-
-    if (!requestBody.email || !requestBody.password) {
-      return {
-        statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: 'Missing required fields: email or password',
-        }),
-      };
-    }
-
-    const signInRequest: ISignInReq = {
-      email: requestBody.email,
-      password: requestBody.password,
-    };
-
-    const repository = new UsersRepository();
-    const service = new UsersService(repository);
-    const signInUseCase = new SignInUseCase(service);
-
-    const response = await signInUseCase.execute(signInRequest);
+    const response = await new SignInUseCase(
+      new UsersService(new UsersRepository())
+    ).execute(userData);
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(response),
+      body: JSON.stringify({
+        message: 'User signed with success!',
+        data: response,
+      }),
     };
   } catch (error) {
     console.error('Error during sign-in:', error);
-
-    return {
-      statusCode: 401,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: 'Authentication failed',
-        error: (error as Error).message,
-      }),
-    };
+    throw error;
   }
 };
+
+export const handler = middy(signInHandler)
+  .use(jsonBodyParser())
+  .use(signInValidator)
+  .use(errorFormatter())
+  .use(httpErrorHandler());
