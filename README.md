@@ -9,6 +9,7 @@ This project implements a serverless user management service using AWS Lambda, A
 - User registration with password encryption
 - User authentication with JWT tokens
 - Email uniqueness validation
+- Protected routes to access user information via JWT tokens
 
 ## 🏗️ Architecture
 
@@ -19,7 +20,7 @@ This project implements a serverless user management service using AWS Lambda, A
 ```
 
 ### Components
-- **Lambda Functions**: sign-up, sign-in, jwt-authorizer
+- **Lambda Functions**: sign-up, sign-in, jwt-authorizer, user-info
 - **API Gateway**: HTTP API with routes for user operations
 - **DynamoDB**: NoSQL database with GSI for email lookups
 - **JWT**: Stateless authentication for protected routes
@@ -79,7 +80,8 @@ jwt_secret = "your-secret-key-change-in-production"
 │   ├── application/             # Application use cases
 │   │   └── use-cases/
 │   │       ├── sign-in.use-case.ts
-│   │       └── sign-up.use-case.ts
+│   │       ├── sign-up.use-case.ts
+│   │       └── user-info.use-case.ts
 │   │
 │   ├── domain/                  # Domain entities and interfaces
 │   │   ├── entity/
@@ -90,6 +92,10 @@ jwt_secret = "your-secret-key-change-in-production"
 │   └── infrastructure/          # Implementation details
 │       ├── environments/        # Environment configurations
 │       ├── handlers/            # Lambda function handlers
+│       │   ├── jwt-authorizer/  # JWT validation for protected routes
+│       │   ├── sign-in/         # User authentication
+│       │   ├── sign-up/         # User registration
+│       │   └── user-info/       # Get authenticated user info
 │       ├── repository/          # Repository implementations
 │       ├── service/             # Service implementations
 │       └── utils/               # Utility functions
@@ -113,11 +119,12 @@ jwt_secret = "your-secret-key-change-in-production"
 
 ## 📦 Lambda Functions
 
-The project includes three Lambda functions:
+The project includes four Lambda functions:
 
 1. **sign-up**: Registers new users with encrypted passwords
 2. **sign-in**: Authenticates users and generates JWT tokens
 3. **jwt-authorizer**: Validates JWT tokens for protected routes
+4. **user-info**: Retrieves user information using the authorized user's ID from the JWT token
 
 ## 🗄️ Database Schema
 
@@ -214,6 +221,33 @@ POST /users/sign-in
 }
 ```
 
+### Get User Information
+
+```
+GET /users/me
+```
+
+**Headers:**
+```
+Authorization: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response:**
+```json
+{
+  "message": "User info retrieved successfully",
+  "data": {
+    "user": {
+      "id": "uuid",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "555-1234",
+      "createdAt": 1747717717575
+    }
+  }
+}
+```
+
 ## 🔧 Technologies Used
 
 - **Runtime**: Node.js 18
@@ -222,25 +256,11 @@ POST /users/sign-in
 - **Database**: Amazon DynamoDB
 - **Authentication**: JWT (jsonwebtoken)
 - **Password Hashing**: bcryptjs
+- **Middleware**: Middy for Lambda middleware
+- **Validation**: JSON Schema validation for requests
 - **Bundling**: esbuild
 - **Infrastructure**: Terraform
 - **UUID Generation**: uuid
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-1. **Lambda Timeouts**:
-   - Increase memory allocation (currently 384MB)
-   - Check for inefficient database operations
-
-2. **Permissions Issues**:
-   - Verify IAM roles have correct policies
-   - Check DynamoDB access permissions
-
-3. **JWT Authorization Failures**:
-   - Verify JWT_SECRET_KEY environment variable
-   - Check token format (should be "Bearer TOKEN")
 
 ---
 
