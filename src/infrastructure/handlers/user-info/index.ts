@@ -1,42 +1,45 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { ISignInReq } from '../../../domain/entity/users.entity.interface';
-import { SignInUseCase } from '../../../application/use-cases/sign-in.use-case';
+import { UserInfoUseCase } from '../../../application/use-cases/user-info.use-case';
 import { UsersService } from '../../service/users.service';
 import { UsersRepository } from '../../repository/users.repository';
-import middy from '@middy/core';
 import jsonBodyParser from '@middy/http-json-body-parser';
-import { signInValidator } from '../../schemas/sign-in/sign-in.schema';
 import { errorFormatter } from '../../utils/error-formatter/error-formatter.util';
 import httpErrorHandler from '@middy/http-error-handler';
+import middy from '@middy/core';
 
-export const signInHandler = async (
+const userInfoHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  console.log('Sign-in request received:', event);
-
   try {
-    const userData = event.body as unknown as ISignInReq;
+    const userId = event.requestContext.authorizer?.lambda?.userId;
 
-    const response = await new SignInUseCase(
+    if (!userId) {
+      return {
+        statusCode: 401,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'User ID not found in authorization context',
+        }),
+      };
+    }
+
+    const response = await new UserInfoUseCase(
       new UsersService(new UsersRepository())
-    ).execute(userData);
-
+    ).execute({ id: userId });
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: 'User signed with success!',
+        message: 'User info retrieved successfully',
         data: response,
       }),
     };
   } catch (error) {
-    console.error('Error during sign-in:', error);
+    console.error('Error retrieving user info:', error);
     throw error;
   }
 };
 
-export const handler = middy(signInHandler)
-  .use(jsonBodyParser())
-  .use(signInValidator)
+export const handler = middy(userInfoHandler)
   .use(errorFormatter())
   .use(httpErrorHandler());
