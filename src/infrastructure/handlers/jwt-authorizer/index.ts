@@ -1,16 +1,26 @@
 import {
   APIGatewayAuthorizerResult,
-  APIGatewayTokenAuthorizerEvent,
+  APIGatewayRequestAuthorizerEventV2,
 } from 'aws-lambda';
 import { jwtUtil } from '../../utils/jwt/jwt.util';
 import { IJwtPayload } from '../../utils/jwt/interface/jwt-payload.interface';
 
 export const handler = async (
-  event: APIGatewayTokenAuthorizerEvent
+  event: APIGatewayRequestAuthorizerEventV2
 ): Promise<APIGatewayAuthorizerResult> => {
   try {
-    const token = event.authorizationToken.replace('Bearer ', '');
-    const decoded = jwtUtil.verify<IJwtPayload>(token);
+    let token;
+
+    if (event.headers && event.headers.authorization) {
+      const authHeader = event.headers.authorization;
+      if (authHeader.startsWith('token ')) {
+        token = authHeader.substring(6);
+      } else if (authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+
+    const decoded = jwtUtil.verify<IJwtPayload>(token!);
 
     return {
       principalId: decoded.id,
@@ -20,7 +30,7 @@ export const handler = async (
           {
             Action: 'execute-api:Invoke',
             Effect: 'Allow',
-            Resource: event.methodArn,
+            Resource: event.routeArn,
           },
         ],
       },
@@ -41,7 +51,7 @@ export const handler = async (
           {
             Action: 'execute-api:Invoke',
             Effect: 'Deny',
-            Resource: event.methodArn,
+            Resource: event.routeArn,
           },
         ],
       },

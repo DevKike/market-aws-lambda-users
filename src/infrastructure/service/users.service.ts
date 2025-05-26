@@ -12,6 +12,14 @@ import { bcrypt } from '../utils/bcrypt/bcrypt.util';
 export class UsersService implements IUsersService {
   constructor(private readonly _usersRepository: IUsersRepository) {}
 
+  async getById(id: IUser['id']): Promise<IUser> {
+    const user = await this._usersRepository.findById(id);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
+  }
+
   async getByEmail(email: string): Promise<IUser> {
     const user = await this._usersRepository.findByEmail(email);
 

@@ -18,3 +18,9 @@ export interface ISignInReq extends Pick<IUser, 'email' | 'password'> {}
 export interface ISignInRes {
   token: string;
 }
+
+export interface IUserInfoReq extends Pick<IUser, 'id'> {}
+
+export interface IUserInfoRes {
+  user: Omit<IUser, 'password'>;
+}
