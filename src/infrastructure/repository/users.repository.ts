@@ -15,6 +15,22 @@ export class UsersRepository implements IUsersRepository {
     });
   }
 
+  async findById(id: IUser['id']): Promise<IUser | null> {
+    try {
+      const result = await this.docClient
+        .get({
+          TableName: this.tableName,
+          Key: { id: id },
+        })
+        .promise();
+
+      return (result.Item as IUser) || null;
+    } catch (error) {
+      console.error('Error finding user by ID:', error);
+      return null;
+    }
+  }
+
   async findByEmail(email: string): Promise<IUser | null> {
     const result = await this.docClient
       .query({

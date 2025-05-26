@@ -2,6 +2,8 @@ import {
   ISignInReq,
   ISignInRes,
 } from '../../domain/entity/users.entity.interface';
+import { AuthenticationException } from '../../domain/exceptions/authentication.exceptiont';
+import { BaseException } from '../../domain/exceptions/base.exception';
 import { IUsersService } from '../../domain/service/users.service.interface';
 import { IUseCase } from '../../domain/use-case/users.use-case.interface';
 import { bcrypt } from '../../infrastructure/utils/bcrypt/bcrypt.util';
@@ -20,7 +22,7 @@ export class SignInUseCase implements IUseCase<ISignInReq, ISignInRes> {
       );
 
       if (!isPasswordValid) {
-        throw new Error('Invalid email or password');
+        throw new AuthenticationException('Invalid email or password.');
       }
 
       const token = jwtUtil.sign({
@@ -30,12 +32,14 @@ export class SignInUseCase implements IUseCase<ISignInReq, ISignInRes> {
       });
 
       return {
-        message: 'Signed in with success!',
         token,
       };
     } catch (error) {
-      console.error('Sign in error: ', error);
-      throw new Error('Invalid email or password');
+      if (error instanceof BaseException) {
+        throw error;
+      } else {
+        throw new AuthenticationException('Invalid email or password.');
+      }
     }
   }
 }
